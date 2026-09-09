@@ -2,6 +2,26 @@
 
 A standalone ComfyUI node for preparing images for **GPT Image 2.5 Sunburst and Flare**. Calculates a valid output canvas, crops or pads without deliberate stretching, and returns the prepared image plus dimensions. No API calls or keys are required.
 
+## Automatic editing workflow
+
+Use **Gpt Image Auto Prepare** before generation and **Gpt Image Auto Restore** afterward. These companion nodes have no sizing or positioning widgets. The original **Gpt Image Size Calculator** remains available for manual control and existing workflows.
+
+1. Connect the original ComfyUI image to Auto Prepare's `raw_image`.
+2. Connect its prepared image and width/height to the generation node. With NanoSeed, keep resolution at 4K.
+3. Connect the generated image to Auto Restore's `edited_image`.
+4. Connect the same original to Restore's `raw_image`, and Prepare's `transform` to Restore's `transform`.
+5. Optionally connect an edit mask at the **original image resolution** to Restore's `edit_mask`.
+
+Prepare starts with the verified NanoSeed 4K dimensions and repeats the size calculation until the canvas is stable when fed back through NanoSeed. This avoids a second rounding adjustment in the receiving node. It fits the whole original into that canvas with centered padding and records the exact integer content rectangle. Restore removes that padding and maps the result back to the original width and height using the recorded geometry. There is no automatic subject detection or manual crop selection.
+
+For face replacement or another local edit, a raw-resolution mask makes preservation precise: **pixels where the mask is exactly zero are copied unchanged from the original tensor**. White selects the edit; gray blends it. The optional `restored_edit` output is the complete restored generated image before compositing. Without a mask, the whole generated result is restored, and unchanged background pixels are not guaranteed to match the original.
+
+An optional mask connected to Prepare is resized/padded alongside its image. Its mask output follows ComfyUI's white-means-edit convention and is not necessarily a ready-to-upload API mask; check the generation node's mask conversion. Use the original-resolution mask for Restore, not Prepare's resized output. If no mask is supplied, Prepare outputs a mask selecting the image content and excluding padding.
+
+**Geometry restoration is not image registration.** The output canvas matches the original, but model-induced movement or reshaping cannot be undone from dimensions alone. Resizing also cannot preserve all original pixel values inside the edited area. Use the exact same raw image and the matching transform for each edit. Restore rejects unexpected generated dimensions rather than guessing how the service transformed them. “Raw image” means the original ComfyUI IMAGE tensor, not a camera RAW file decoder.
+
+One original can be broadcast across multiple generated variations. Otherwise batches must be compatible; masks may have one item or match the final batch. Channels must match between the original and edit. For three-channel API output, use a three-channel original.
+
 ## Install
 
 Clone this repository into your ComfyUI `custom_nodes` directory:

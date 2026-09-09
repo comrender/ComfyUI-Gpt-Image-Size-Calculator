@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+- Added automatic Prepare and Restore companion nodes with an original-image reference.
+- Preserve the full frame with automatic fit/padding and recorded geometry.
+- Restore generated edits to the original dimensions without manual sizing controls.
+- Optional original-resolution edit masks preserve untouched pixels exactly.
+- Existing calculator inputs and outputs remain compatible.
+
 ## 1.0.0
 
 - Standalone Gpt Image Size Calculator node.
