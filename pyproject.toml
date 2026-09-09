@@ -1,0 +1,20 @@
+[project]
+name = "gpt-image-size-calculator"
+version = "1.0.0"
+description = "Standalone GPT Image 2.5 size calculator, cropper, and resizer for ComfyUI."
+requires-python = ">=3.10"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "comrender" }]
+dependencies = [] # Uses the PyTorch installation supplied by ComfyUI.
+classifiers = ["Operating System :: OS Independent"]
+
+[project.urls]
+Repository = "https://github.com/comrender/ComfyUI-Gpt-Image-Size-Calculator"
+Documentation = "https://github.com/comrender/ComfyUI-Gpt-Image-Size-Calculator#readme"
+"Bug Tracker" = "https://github.com/comrender/ComfyUI-Gpt-Image-Size-Calculator/issues"
+
+[tool.comfy]
+PublisherId = "comrender"
+DisplayName = "Gpt Image Size Calculator"
+includes = []
