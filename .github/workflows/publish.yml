@@ -1,0 +1,30 @@
+name: Publish to Comfy Registry
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: comfy-registry-publish
+  cancel-in-progress: false
+jobs:
+  tests:
+    uses: ./.github/workflows/ci.yml
+  publish:
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check publishing credential
+        env:
+          REGISTRY_ACCESS_TOKEN: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$REGISTRY_ACCESS_TOKEN" ]; then
+            echo '::error::Add the comrender publisher API key as the REGISTRY_ACCESS_TOKEN repository secret.'
+            exit 1
+          fi
+      - name: Publish node
+        uses: Comfy-Org/publish-node-action@0eb6cd742945443bee7f79eeddd4f732780029a1 # v1
+        with:
+          personal_access_token: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
